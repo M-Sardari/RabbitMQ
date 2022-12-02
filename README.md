@@ -1,73 +1,113 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Redis is an open source, in-memory data structure store used as a database, cache, message broker, and streaming engine.
 
-## Installation
+You can to use gadin-rabbit package easily and setup it.
 
-```bash
-$ npm install
+## Usage
+
+### Step 1: Installation
+
+```sh
+npm install gadin-rabbit
 ```
 
-## Running the app
+wait for the installation to finish.
 
-```bash
-# development
-$ npm run start
+### Step 2: Module initialization
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+You've added below code in your root module:
+```ts
+@Module({
+    imports: [
+        RmqModule.register({
+            uri: 'amqp://guest:guest@localhost:5672',
+            name : "services",
+            wait : true ,
+            timeout : 20000,
+            type : 'topic',
+            prefetchCount : 10
+        }),    
+    ],
+    controllers: [AppController],
+    providers: [AppService],
+})
+export class AppModule {
+}
 ```
 
-## Test
+### Notice
+    1. The name, wait, timeout, type and prefetchCount are optional.
+    2. Default value of type is topic.
 
-```bash
-# unit tests
-$ npm run test
+### Step 3: Use in Services
 
-# e2e tests
-$ npm run test:e2e
+You've to add these decorators above the functions:
 
-# test coverage
-$ npm run test:cov
+#### Subscribe
+If the return value of your function is void, then you have to use this method:
+
+```ts
+@Subscribe({
+    routingKey: 'user.add',
+    queue: 'user-add',
+})
+addUser(objUser:any) : void
+{
+    // add user...
+}
 ```
 
-## Support
+#### Rpc
+If the return value of your function is not void, then you have to use this method:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```ts
+@Rpc({
+    routingKey: 'user.get',
+    queue: 'user-get',
+})
+getUser(id:number) : User
+{
+    // get user...
+}
+```
 
-## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Notice
+You've to inject RmqService in your service and use rabbit methods like below:
+```ts
+@Injectable()
+export class AppService {
+    constructor(private broker: RmqService) {
+    }
+}
+```
+
+If you want consume your messages should be use these decorators: 
+
+#### publish
+If you want to call void message, then you've to use this way:
+
+```ts
+await this.broker.publish('user.add', payload);
+```
+
+
+#### request
+If you want to call don't void message, then you've to use this way:
+
+```ts
+return await this.broker.request<any>({ routingKey, payload, timeout });
+```
+
+
+### Hint
+    Import RmqModule, RmqService, Rpc and Subscribe from the gadin-rabbit
+
+
+## Author
+[Mohammad Sardari](mailto:m.sardari@live.com)
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+[MIT License](./LICENCE)
