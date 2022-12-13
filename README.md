@@ -1,6 +1,6 @@
 ## Description
 
-Redis is an open source, in-memory data structure store used as a database, cache, message broker, and streaming engine.
+RabbitMQ is a messaging broker - an intermediary for messaging. It gives your applications a common platform to send and receive messages, and your messages a safe place to live until received.
 
 You can to use gadin-rabbit package easily and setup it.
 
