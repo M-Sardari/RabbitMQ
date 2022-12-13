@@ -1,17 +1,24 @@
-version: "3.2"
+version: '3.8'
 services:
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - rabbitmq_net
+      - rabbitmq_network
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_log:
 
 networks:
-  rabbitmq_net:
+  rabbitmq_network:
     driver: bridge
