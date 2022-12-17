@@ -1,6 +1,6 @@
 {
   "name": "gadin-rabbit",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A module for quick setup and convenient use of RabbitMQ in nestjs.",
   "main": "dist/index.js",
   "scripts": {
