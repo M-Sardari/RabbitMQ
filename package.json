@@ -2,6 +2,8 @@
   "name": "gadin-rabbit",
   "version": "1.0.0",
   "description": "A module for quick setup and convenient use of RabbitMQ in nestjs.",
+  "author": "Mohammad Sardari <m.sardari@live.com>",
+  "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -11,8 +13,6 @@
     "type": "git",
     "url": "https://github.com/M-Sardari/RabbitMQ.git"
   },
-  "author": "Mohammad Sardari <m.sardari@live.com>",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/M-Sardari/RabbitMQ/issues"
   },
